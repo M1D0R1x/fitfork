@@ -372,6 +372,159 @@ export interface NutritionPlan {
   recommendations: string[];
 }
 
+function calculateDailyCalories(userData: UserData): number {
+  const age = parseInt(userData.age) || 30;
+  const weight = parseFloat(userData.weight) || 70; // in kg
+  const height = parseFloat(userData.height) || 170; // in cm
+  const gender = userData.gender.toLowerCase() || "male";
+  const activityLevel = userData.activityLevel.toLowerCase() || "moderate";
+  const goal = userData.goal.toLowerCase() || "maintain";
+
+  // Mifflin-St Jeor Equation for Basal Metabolic Rate (BMR)
+  let bmr: number;
+  if (gender === "female") {
+    bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+  } else {
+    bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+  }
+
+  // Activity multipliers
+  const activityMultipliers: { [key: string]: number } = {
+    sedentary: 1.2,
+    light: 1.375,
+    moderate: 1.55,
+    active: 1.725,
+    very_active: 1.9,
+  };
+  const activityFactor = activityMultipliers[activityLevel] || 1.55;
+  let tdee = bmr * activityFactor;
+
+  // Adjust based on goal
+  if (goal === "lose") {
+    tdee *= 0.8; // 20% calorie deficit for weight loss
+  } else if (goal === "gain") {
+    tdee += 500; // 500 kcal surplus for weight gain
+  } else if (goal === "muscle") {
+    tdee += 400; // 400 kcal surplus for muscle building
+  }
+
+  // Ensure minimum calorie intake for safety
+  const minCalories = age <= 12 ? 1000 : 1200;
+  return Math.round(Math.max(tdee, minCalories));
+}
+
+function adjustMeals(
+    baseMeals: Meal[],
+    targetCalories: number,
+    mealCount: number,
+    dietaryRestrictions: string[],
+    preferences: string
+): Meal[] {
+  let adjustedMeals = [...baseMeals];
+
+  // Apply dietary restrictions
+  const restrictionFilters: { [key: string]: (foodName: string) => boolean } = {
+    vegetarian: (foodName) => !["chicken", "turkey", "beef", "salmon", "steak"].some((meat) => foodName.toLowerCase().includes(meat)),
+    vegan: (foodName) => !["yogurt", "egg", "chicken", "turkey", "beef", "salmon", "steak", "cheese", "whey", "casein"].some((item) => foodName.toLowerCase().includes(item)),
+    gluten_free: (foodName) => !["bread", "oat", "pasta", "granola"].some((item) => foodName.toLowerCase().includes(item)),
+    dairy_free: (foodName) => !["yogurt", "cheese", "whey", "casein"].some((item) => foodName.toLowerCase().includes(item)),
+  };
+
+  adjustedMeals = adjustedMeals.map((meal) => ({
+    ...meal,
+    foods: meal.foods.filter((food) => {
+      return dietaryRestrictions.every((restriction) => {
+        const filter = restrictionFilters[restriction.toLowerCase()];
+        return filter ? filter(food.name) : true;
+      });
+    }),
+  }));
+
+  // Adjust number of meals
+  if (mealCount < adjustedMeals.length) {
+    adjustedMeals = adjustedMeals.slice(0, mealCount);
+  } else if (mealCount > adjustedMeals.length) {
+    const snacks = [
+      {
+        name: "Additional Snack",
+        time: `${11 + adjustedMeals.length}:00 AM`,
+        foods: [{ name: "Protein Bar", portion: "1 bar", calories: 200, protein: 20, carbs: 15, fat: 7 }],
+        totalCalories: 200,
+      },
+      {
+        name: "Additional Snack",
+        time: `${3 + adjustedMeals.length}:00 PM`,
+        foods: [{ name: "Mixed Nuts", portion: "1 oz", calories: 170, protein: 5, carbs: 6, fat: 15 }],
+        totalCalories: 170,
+      },
+      {
+        name: "Additional Snack",
+        time: `${9 + adjustedMeals.length}:00 PM`,
+        foods: [{ name: "Casein Protein", portion: "1 scoop", calories: 120, protein: 24, carbs: 3, fat: 1 }],
+        totalCalories: 120,
+      },
+    ];
+    for (let i = adjustedMeals.length; i < mealCount && i - adjustedMeals.length < snacks.length; i++) {
+      adjustedMeals.push(snacks[i - adjustedMeals.length]);
+    }
+  }
+
+  // Scale meals to match target calories
+  const currentTotalCalories = adjustedMeals.reduce((sum, meal) => sum + meal.totalCalories, 0);
+  if (currentTotalCalories === 0) return adjustedMeals;
+
+  const scaleFactor = targetCalories / currentTotalCalories;
+  adjustedMeals = adjustedMeals.map((meal) => {
+    const scaledFoods = meal.foods.map((food) => {
+      const portionNum = parseFloat(food.portion) || 1;
+      return {
+        ...food,
+        calories: Math.round(food.calories * scaleFactor),
+        protein: Math.round(food.protein * scaleFactor),
+        carbs: Math.round(food.carbs * scaleFactor),
+        fat: Math.round(food.fat * scaleFactor),
+        portion: `${(portionNum * scaleFactor).toFixed(1)} ${food.portion.replace(/[\d.]+/, "")}`,
+      };
+    });
+    return {
+      ...meal,
+      foods: scaledFoods,
+      totalCalories: Math.round(meal.totalCalories * scaleFactor),
+    };
+  });
+
+  // Apply food preferences (e.g., add preferred foods to lunch)
+  const preferenceFoods: { [key: string]: Food } = {
+    chicken: { name: "Grilled Chicken", portion: "4 oz", calories: 180, protein: 35, carbs: 0, fat: 4 },
+    fish: { name: "Baked Salmon", portion: "4 oz", calories: 200, protein: 25, carbs: 0, fat: 10 },
+    tofu: { name: "Tofu Stir-Fry", portion: "1 cup", calories: 150, protein: 15, carbs: 10, fat: 8 },
+    rice: { name: "Brown Rice", portion: "1/2 cup", calories: 110, protein: 2.5, carbs: 23, fat: 1 },
+    vegetables: { name: "Mixed Vegetables", portion: "1 cup", calories: 50, protein: 2, carbs: 10, fat: 0.5 },
+  };
+
+  const preferenceKeys = Object.keys(preferenceFoods).filter((key) => preferences.toLowerCase().includes(key));
+  if (preferenceKeys.length > 0) {
+    adjustedMeals = adjustedMeals.map((meal, index) => {
+      if (index === 1 && meal.name.toLowerCase().includes("lunch")) {
+        const newFoods = [...meal.foods];
+        preferenceKeys.forEach((key) => {
+          if (!newFoods.some((food) => food.name.toLowerCase().includes(key))) {
+            newFoods.push(preferenceFoods[key]);
+          }
+        });
+        return {
+          ...meal,
+          foods: newFoods,
+          totalCalories: newFoods.reduce((sum, food) => sum + food.calories, 0),
+        };
+      }
+      return meal;
+    });
+  }
+
+  return adjustedMeals;
+}
+
 export async function generateNutritionPlan(userData: UserData): Promise<NutritionPlan> {
   try {
     const aiPlan = await tryGenerateWithAI(userData);
@@ -399,13 +552,14 @@ async function tryGenerateWithAI(userData: UserData): Promise<NutritionPlan | nu
       return null;
     }
 
-    // Check for API key (replace with actual check in production)
+    // Check for API key
     const hasApiKey = false; // process.env.OPENAI_API_KEY in production
     if (!hasApiKey) {
       console.log("No OpenAI API key available, using fallback plan");
       return null;
     }
 
+    const dailyCalories = calculateDailyCalories(userData);
     const prompt = `
       Generate a personalized nutrition plan based on the following information:
       
@@ -415,21 +569,22 @@ async function tryGenerateWithAI(userData: UserData): Promise<NutritionPlan | nu
       Weight: ${userData.weight} kg
       Activity Level: ${userData.activityLevel}
       Goal: ${userData.goal}
-      Dietary Restrictions: ${userData.dietaryRestrictions.join(", ")}
-      Allergies: ${userData.allergies}
-      Food Preferences: ${userData.preferences}
+      Dietary Restrictions: ${userData.dietaryRestrictions.join(", ") || "None"}
+      Allergies: ${userData.allergies || "None"}
+      Food Preferences: ${userData.preferences || "None"}
       Preferred Meals Per Day: ${userData.mealPreference}
-      Medical Conditions: ${userData.medicalConditions}
+      Medical Conditions: ${userData.medicalConditions || "None"}
+      Calculated Daily Calorie Needs: ${dailyCalories} kcal
       
       Provide a detailed nutrition plan with:
-      1. Daily calorie target
-      2. Macronutrient breakdown (protein, carbs, fat in grams)
-      3. ${userData.mealPreference} meal suggestions with food items, portions, calories, and macronutrients (protein, carbs, fat in grams)
-      4. General nutrition recommendations tailored to the user's goal and medical conditions
+      1. Daily calorie target (use ${dailyCalories} kcal)
+      2. Macronutrient breakdown (protein, carbs, fat in grams, tailored to goal: e.g., high protein for muscle, balanced for health)
+      3. Exactly ${userData.mealPreference} meal suggestions with food items, portions, calories, and macronutrients (respect dietary restrictions, allergies, and preferences)
+      4. 3-5 general nutrition recommendations tailored to the user's goal and medical conditions
       
       Format the response as a JSON object:
       {
-        "dailyCalories": number,
+        "dailyCalories": ${dailyCalories},
         "macros": {
           "protein": number,
           "carbs": number,
@@ -459,8 +614,7 @@ async function tryGenerateWithAI(userData: UserData): Promise<NutritionPlan | nu
     const { text } = await generateText({
       model: openai("gpt-3.5-turbo"),
       prompt,
-      system:
-          "You are a professional nutritionist with expertise in creating personalized meal plans. Generate detailed, realistic nutrition plans based on user data, considering medical conditions.",
+      system: "You are a professional nutritionist with expertise in creating personalized meal plans. Generate detailed, realistic nutrition plans based on user data, considering medical conditions.",
     });
 
     const plan = JSON.parse(text) as NutritionPlan;
@@ -477,37 +631,33 @@ function getFallbackPlan(userData: UserData): NutritionPlan {
   const goalType = userData.goal as keyof typeof FALLBACK_PLANS;
   const basePlan = FALLBACK_PLANS[goalType] || FALLBACK_PLANS.maintain;
 
+  // Calculate daily calorie needs
+  const dailyCalories = calculateDailyCalories(userData);
   const mealCount = parseInt(userData.mealPreference) || 3;
-  let adjustedMeals = [...basePlan.meals];
 
-  if (mealCount < adjustedMeals.length) {
-    adjustedMeals = adjustedMeals.slice(0, mealCount);
-  } else if (mealCount > adjustedMeals.length) {
-    const snacks = [
-      {
-        name: "Additional Snack",
-        time: "11:00 AM",
-        foods: [{ name: "Protein Bar", portion: "1 bar", calories: 200, protein: 20, carbs: 15, fat: 7 }],
-        totalCalories: 200,
-      },
-      {
-        name: "Additional Snack",
-        time: "3:00 PM",
-        foods: [{ name: "Mixed Nuts", portion: "1 oz", calories: 170, protein: 5, carbs: 6, fat: 15 }],
-        totalCalories: 170,
-      },
-      {
-        name: "Additional Snack",
-        time: "9:00 PM",
-        foods: [{ name: "Casein Protein", portion: "1 scoop", calories: 120, protein: 24, carbs: 3, fat: 1 }],
-        totalCalories: 120,
-      },
-    ];
+  // Calculate macros based on goal and calculated calories
+  const macroRatios: { [key: string]: { protein: number; carbs: number; fat: number } } = {
+    lose: { protein: 0.35, carbs: 0.35, fat: 0.3 },
+    maintain: { protein: 0.25, carbs: 0.45, fat: 0.3 },
+    gain: { protein: 0.3, carbs: 0.5, fat: 0.2 },
+    muscle: { protein: 0.4, carbs: 0.4, fat: 0.2 },
+    health: { protein: 0.25, carbs: 0.45, fat: 0.3 },
+  };
+  const ratio = macroRatios[userData.goal] || macroRatios.maintain;
+  const macros = {
+    protein: Math.round((dailyCalories * ratio.protein) / 4), // 4 kcal/g for protein
+    carbs: Math.round((dailyCalories * ratio.carbs) / 4), // 4 kcal/g for carbs
+    fat: Math.round((dailyCalories * ratio.fat) / 9), // 9 kcal/g for fat
+  };
 
-    for (let i = adjustedMeals.length; i < mealCount && i - adjustedMeals.length < snacks.length; i++) {
-      adjustedMeals.push(snacks[i - adjustedMeals.length]);
-    }
-  }
+  // Adjust meals to match the calculated calorie target and user preferences
+  const adjustedMeals = adjustMeals(
+      basePlan.meals,
+      dailyCalories,
+      mealCount,
+      userData.dietaryRestrictions,
+      userData.preferences
+  );
 
   const recommendations = [...basePlan.recommendations];
   if (userData.medicalConditions) {
@@ -516,8 +666,8 @@ function getFallbackPlan(userData: UserData): NutritionPlan {
 
   const plan: NutritionPlan = {
     id: generateUniqueId(),
-    dailyCalories: basePlan.dailyCalories,
-    macros: basePlan.macros,
+    dailyCalories,
+    macros,
     meals: adjustedMeals,
     recommendations,
   };
