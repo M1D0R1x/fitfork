@@ -11,7 +11,7 @@ export default function About() {
         <section className="py-12 md:py-24 bg-green-50 dark:bg-green-950/10">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center text-center space-y-4">
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">About NutriAI</h1>
+              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">About FitFork</h1>
               <p className="max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
                 Revolutionizing nutrition planning with artificial intelligence
               </p>
@@ -25,13 +25,13 @@ export default function About() {
               <div>
                 <h2 className="text-2xl font-bold tracking-tighter sm:text-3xl mb-4">Our Mission</h2>
                 <p className="text-gray-500 dark:text-gray-400 mb-4">
-                  At NutriAI, we believe that proper nutrition should be accessible to everyone. Our mission is to
+                  At FitFork, we believe that proper nutrition should be accessible to everyone. Our mission is to
                   democratize personalized nutrition by leveraging the power of artificial intelligence to create
                   customized meal plans that cater to individual needs, preferences, and goals.
                 </p>
                 <p className="text-gray-500 dark:text-gray-400 mb-4">
                   Traditional nutrition planning often involves expensive consultations with dietitians or
-                  nutritionists, making it inaccessible to many. NutriAI bridges this gap by providing expert-level
+                  nutritionists, making it inaccessible to many. FitFork bridges this gap by providing expert-level
                   nutrition guidance at a fraction of the cost.
                 </p>
                 <p className="text-gray-500 dark:text-gray-400">
@@ -44,7 +44,7 @@ export default function About() {
                 <div className="relative w-full max-w-[500px] aspect-square">
                   <img
                     src="/placeholder.svg?height=500&width=500"
-                    alt="NutriAI Mission"
+                    alt="FitFork Mission"
                     className="rounded-lg shadow-xl"
                     width={500}
                     height={500}
@@ -57,7 +57,7 @@ export default function About() {
 
         <section className="py-12 md:py-24 bg-green-50 dark:bg-green-950/10">
           <div className="container px-4 md:px-6">
-            <h2 className="text-2xl font-bold tracking-tighter sm:text-3xl mb-8 text-center">How NutriAI Works</h2>
+            <h2 className="text-2xl font-bold tracking-tighter sm:text-3xl mb-8 text-center">How FitFork Works</h2>
             <div className="grid gap-8 md:grid-cols-3">
               <div className="flex flex-col items-center text-center space-y-3">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
@@ -97,7 +97,7 @@ export default function About() {
           <div className="container px-4 md:px-6 text-center">
             <h2 className="text-2xl font-bold tracking-tighter sm:text-3xl mb-4">Ready to Transform Your Nutrition?</h2>
             <p className="max-w-[700px] mx-auto text-gray-500 md:text-xl dark:text-gray-400 mb-8">
-              Join thousands of users who have improved their health with personalized nutrition plans from NutriAI.
+              Join thousands of users who have improved their health with personalized nutrition plans from FitFork.
             </p>
             <Button asChild size="lg" className="bg-green-600 hover:bg-green-700">
               <Link href="/get-started">Get Started Now</Link>

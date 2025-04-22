@@ -2,13 +2,13 @@ export function Testimonials() {
   const testimonials = [
     {
       quote:
-        "NutriAI completely transformed my approach to healthy eating. The personalized meal plans are easy to follow and actually delicious!",
+        "FitFork completely transformed my approach to healthy eating. The personalized meal plans are easy to follow and actually delicious!",
       author: "Sarah J.",
       role: "Fitness Enthusiast",
     },
     {
       quote:
-        "As someone with multiple food allergies, finding suitable meal plans was always a challenge. NutriAI made it effortless.",
+        "As someone with multiple food allergies, finding suitable meal plans was always a challenge. FitFork made it effortless.",
       author: "Michael T.",
       role: "Software Developer",
     },
@@ -26,7 +26,7 @@ export function Testimonials() {
           <div className="space-y-2">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">What Our Users Say</h2>
             <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-              Hear from people who have transformed their nutrition with NutriAI
+              Hear from people who have transformed their nutrition with FitFork
             </p>
           </div>
         </div>

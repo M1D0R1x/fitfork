@@ -1,20 +1,16 @@
-// Mock data for fallback when AI generation fails
+// nutrition-ai.ts
 const FALLBACK_PLANS = {
   lose: {
     dailyCalories: 1800,
-    macros: {
-      protein: 135,
-      carbs: 157,
-      fat: 60,
-    },
+    macros: { protein: 135, carbs: 157, fat: 60 },
     meals: [
       {
         name: "Breakfast",
         time: "8:00 AM",
         foods: [
-          { name: "Greek Yogurt", portion: "1 cup", calories: 150 },
-          { name: "Berries", portion: "1/2 cup", calories: 40 },
-          { name: "Almonds", portion: "1 oz", calories: 160 },
+          { name: "Greek Yogurt", portion: "1 cup", calories: 150, protein: 20, carbs: 8, fat: 5 },
+          { name: "Berries", portion: "1/2 cup", calories: 40, protein: 0.5, carbs: 10, fat: 0.2 },
+          { name: "Almonds", portion: "1 oz", calories: 160, protein: 6, carbs: 6, fat: 14 },
         ],
         totalCalories: 350,
       },
@@ -22,9 +18,9 @@ const FALLBACK_PLANS = {
         name: "Lunch",
         time: "12:30 PM",
         foods: [
-          { name: "Grilled Chicken Breast", portion: "4 oz", calories: 180 },
-          { name: "Quinoa", portion: "1/2 cup", calories: 110 },
-          { name: "Mixed Vegetables", portion: "1 cup", calories: 80 },
+          { name: "Grilled Chicken Breast", portion: "4 oz", calories: 180, protein: 35, carbs: 0, fat: 4 },
+          { name: "Quinoa", portion: "1/2 cup", calories: 110, protein: 4, carbs: 20, fat: 2 },
+          { name: "Mixed Vegetables", portion: "1 cup", calories: 80, protein: 2, carbs: 15, fat: 1 },
         ],
         totalCalories: 370,
       },
@@ -32,8 +28,8 @@ const FALLBACK_PLANS = {
         name: "Snack",
         time: "3:30 PM",
         foods: [
-          { name: "Apple", portion: "1 medium", calories: 95 },
-          { name: "Peanut Butter", portion: "1 tbsp", calories: 95 },
+          { name: "Apple", portion: "1 medium", calories: 95, protein: 0.5, carbs: 25, fat: 0.3 },
+          { name: "Peanut Butter", portion: "1 tbsp", calories: 95, protein: 3.5, carbs: 3, fat: 8 },
         ],
         totalCalories: 190,
       },
@@ -41,9 +37,9 @@ const FALLBACK_PLANS = {
         name: "Dinner",
         time: "7:00 PM",
         foods: [
-          { name: "Baked Salmon", portion: "5 oz", calories: 240 },
-          { name: "Brown Rice", portion: "1/2 cup", calories: 110 },
-          { name: "Steamed Broccoli", portion: "1 cup", calories: 55 },
+          { name: "Baked Salmon", portion: "5 oz", calories: 240, protein: 28, carbs: 0, fat: 14 },
+          { name: "Brown Rice", portion: "1/2 cup", calories: 110, protein: 2.5, carbs: 23, fat: 1 },
+          { name: "Steamed Broccoli", portion: "1 cup", calories: 55, protein: 4, carbs: 11, fat: 0.6 },
         ],
         totalCalories: 405,
       },
@@ -51,8 +47,8 @@ const FALLBACK_PLANS = {
         name: "Evening Snack",
         time: "9:00 PM",
         foods: [
-          { name: "Cottage Cheese", portion: "1/2 cup", calories: 90 },
-          { name: "Pineapple", portion: "1/2 cup", calories: 40 },
+          { name: "Cottage Cheese", portion: "1/2 cup", calories: 90, protein: 12, carbs: 3, fat: 2.5 },
+          { name: "Pineapple", portion: "1/2 cup", calories: 40, protein: 0.4, carbs: 10, fat: 0.1 },
         ],
         totalCalories: 130,
       },
@@ -67,19 +63,15 @@ const FALLBACK_PLANS = {
   },
   maintain: {
     dailyCalories: 2200,
-    macros: {
-      protein: 110,
-      carbs: 248,
-      fat: 73,
-    },
+    macros: { protein: 110, carbs: 248, fat: 73 },
     meals: [
       {
         name: "Breakfast",
         time: "7:30 AM",
         foods: [
-          { name: "Oatmeal", portion: "1 cup cooked", calories: 150 },
-          { name: "Banana", portion: "1 medium", calories: 105 },
-          { name: "Almond Butter", portion: "1 tbsp", calories: 98 },
+          { name: "Oatmeal", portion: "1 cup cooked", calories: 150, protein: 5, carbs: 27, fat: 3 },
+          { name: "Banana", portion: "1 medium", calories: 105, protein: 1.3, carbs: 27, fat: 0.4 },
+          { name: "Almond Butter", portion: "1 tbsp", calories: 98, protein: 3.4, carbs: 3, fat: 9 },
         ],
         totalCalories: 353,
       },
@@ -87,9 +79,9 @@ const FALLBACK_PLANS = {
         name: "Lunch",
         time: "12:00 PM",
         foods: [
-          { name: "Turkey Sandwich", portion: "1 sandwich", calories: 350 },
-          { name: "Mixed Greens Salad", portion: "2 cups", calories: 15 },
-          { name: "Olive Oil Dressing", portion: "1 tbsp", calories: 120 },
+          { name: "Turkey Sandwich", portion: "1 sandwich", calories: 350, protein: 25, carbs: 40, fat: 10 },
+          { name: "Mixed Greens Salad", portion: "2 cups", calories: 15, protein: 1, carbs: 3, fat: 0.2 },
+          { name: "Olive Oil Dressing", portion: "1 tbsp", calories: 120, protein: 0, carbs: 0, fat: 14 },
         ],
         totalCalories: 485,
       },
@@ -97,8 +89,8 @@ const FALLBACK_PLANS = {
         name: "Snack",
         time: "3:00 PM",
         foods: [
-          { name: "Greek Yogurt", portion: "1 cup", calories: 150 },
-          { name: "Granola", portion: "1/4 cup", calories: 120 },
+          { name: "Greek Yogurt", portion: "1 cup", calories: 150, protein: 20, carbs: 8, fat: 5 },
+          { name: "Granola", portion: "1/4 cup", calories: 120, protein: 3, carbs: 15, fat: 5 },
         ],
         totalCalories: 270,
       },
@@ -106,9 +98,9 @@ const FALLBACK_PLANS = {
         name: "Dinner",
         time: "6:30 PM",
         foods: [
-          { name: "Grilled Chicken", portion: "5 oz", calories: 225 },
-          { name: "Sweet Potato", portion: "1 medium", calories: 115 },
-          { name: "Roasted Vegetables", portion: "1 cup", calories: 80 },
+          { name: "Grilled Chicken", portion: "5 oz", calories: 225, protein: 43, carbs: 0, fat: 5 },
+          { name: "Sweet Potato", portion: "1 medium", calories: 115, protein: 2, carbs: 26, fat: 0.1 },
+          { name: "Roasted Vegetables", portion: "1 cup", calories: 80, protein: 2, carbs: 15, fat: 1 },
         ],
         totalCalories: 420,
       },
@@ -116,8 +108,8 @@ const FALLBACK_PLANS = {
         name: "Evening Snack",
         time: "8:30 PM",
         foods: [
-          { name: "Dark Chocolate", portion: "1 oz", calories: 170 },
-          { name: "Strawberries", portion: "1 cup", calories: 50 },
+          { name: "Dark Chocolate", portion: "1 oz", calories: 170, protein: 2, carbs: 13, fat: 12 },
+          { name: "Strawberries", portion: "1 cup", calories: 50, protein: 1, carbs: 12, fat: 0.4 },
         ],
         totalCalories: 220,
       },
@@ -132,20 +124,16 @@ const FALLBACK_PLANS = {
   },
   gain: {
     dailyCalories: 2800,
-    macros: {
-      protein: 175,
-      carbs: 315,
-      fat: 93,
-    },
+    macros: { protein: 175, carbs: 315, fat: 93 },
     meals: [
       {
         name: "Breakfast",
         time: "7:00 AM",
         foods: [
-          { name: "Whole Eggs", portion: "3 large", calories: 210 },
-          { name: "Whole Grain Toast", portion: "2 slices", calories: 160 },
-          { name: "Avocado", portion: "1/2 medium", calories: 120 },
-          { name: "Fruit Smoothie", portion: "16 oz", calories: 250 },
+          { name: "Whole Eggs", portion: "3 large", calories: 210, protein: 18, carbs: 1, fat: 15 },
+          { name: "Whole Grain Toast", portion: "2 slices", calories: 160, protein: 6, carbs: 30, fat: 2 },
+          { name: "Avocado", portion: "1/2 medium", calories: 120, protein: 1, carbs: 6, fat: 11 },
+          { name: "Fruit Smoothie", portion: "16 oz", calories: 250, protein: 5, carbs: 50, fat: 3 },
         ],
         totalCalories: 740,
       },
@@ -153,9 +141,9 @@ const FALLBACK_PLANS = {
         name: "Mid-Morning Snack",
         time: "10:00 AM",
         foods: [
-          { name: "Protein Shake", portion: "1 serving", calories: 150 },
-          { name: "Banana", portion: "1 large", calories: 120 },
-          { name: "Peanut Butter", portion: "2 tbsp", calories: 190 },
+          { name: "Protein Shake", portion: "1 serving", calories: 150, protein: 25, carbs: 5, fat: 3 },
+          { name: "Banana", portion: "1 large", calories: 120, protein: 1.5, carbs: 30, fat: 0.5 },
+          { name: "Peanut Butter", portion: "2 tbsp", calories: 190, protein: 7, carbs: 6, fat: 16 },
         ],
         totalCalories: 460,
       },
@@ -163,9 +151,9 @@ const FALLBACK_PLANS = {
         name: "Lunch",
         time: "1:00 PM",
         foods: [
-          { name: "Grilled Steak", portion: "6 oz", calories: 420 },
-          { name: "Brown Rice", portion: "1 cup", calories: 220 },
-          { name: "Steamed Vegetables", portion: "1 cup", calories: 80 },
+          { name: "Grilled Steak", portion: "6 oz", calories: 420, protein: 50, carbs: 0, fat: 24 },
+          { name: "Brown Rice", portion: "1 cup", calories: 220, protein: 5, carbs: 45, fat: 2 },
+          { name: "Steamed Vegetables", portion: "1 cup", calories: 80, protein: 2, carbs: 15, fat: 1 },
         ],
         totalCalories: 720,
       },
@@ -173,8 +161,8 @@ const FALLBACK_PLANS = {
         name: "Afternoon Snack",
         time: "4:00 PM",
         foods: [
-          { name: "Trail Mix", portion: "1/3 cup", calories: 270 },
-          { name: "Greek Yogurt", portion: "1 cup", calories: 150 },
+          { name: "Trail Mix", portion: "1/3 cup", calories: 270, protein: 6, carbs: 25, fat: 18 },
+          { name: "Greek Yogurt", portion: "1 cup", calories: 150, protein: 20, carbs: 8, fat: 5 },
         ],
         totalCalories: 420,
       },
@@ -182,9 +170,9 @@ const FALLBACK_PLANS = {
         name: "Dinner",
         time: "7:00 PM",
         foods: [
-          { name: "Salmon Fillet", portion: "6 oz", calories: 350 },
-          { name: "Quinoa", portion: "1 cup", calories: 220 },
-          { name: "Roasted Vegetables", portion: "1.5 cups", calories: 120 },
+          { name: "Salmon Fillet", portion: "6 oz", calories: 350, protein: 34, carbs: 0, fat: 23 },
+          { name: "Quinoa", portion: "1 cup", calories: 220, protein: 8, carbs: 39, fat: 4 },
+          { name: "Roasted Vegetables", portion: "1.5 cups", calories: 120, protein: 3, carbs: 20, fat: 2 },
         ],
         totalCalories: 690,
       },
@@ -199,20 +187,16 @@ const FALLBACK_PLANS = {
   },
   muscle: {
     dailyCalories: 2600,
-    macros: {
-      protein: 195,
-      carbs: 260,
-      fat: 72,
-    },
+    macros: { protein: 195, carbs: 260, fat: 72 },
     meals: [
       {
         name: "Breakfast",
         time: "6:30 AM",
         foods: [
-          { name: "Egg Whites", portion: "4 large", calories: 70 },
-          { name: "Whole Eggs", portion: "2 large", calories: 140 },
-          { name: "Oatmeal", portion: "1 cup cooked", calories: 150 },
-          { name: "Blueberries", portion: "1/2 cup", calories: 40 },
+          { name: "Egg Whites", portion: "4 large", calories: 70, protein: 14, carbs: 1, fat: 0.2 },
+          { name: "Whole Eggs", portion: "2 large", calories: 140, protein: 12, carbs: 1, fat: 10 },
+          { name: "Oatmeal", portion: "1 cup cooked", calories: 150, protein: 5, carbs: 27, fat: 3 },
+          { name: "Blueberries", portion: "1/2 cup", calories: 40, protein: 0.5, carbs: 10, fat: 0.2 },
         ],
         totalCalories: 400,
       },
@@ -220,8 +204,8 @@ const FALLBACK_PLANS = {
         name: "Mid-Morning",
         time: "9:30 AM",
         foods: [
-          { name: "Protein Shake", portion: "1 serving", calories: 150 },
-          { name: "Banana", portion: "1 medium", calories: 105 },
+          { name: "Protein Shake", portion: "1 serving", calories: 150, protein: 25, carbs: 5, fat: 3 },
+          { name: "Banana", portion: "1 medium", calories: 105, protein: 1.3, carbs: 27, fat: 0.4 },
         ],
         totalCalories: 255,
       },
@@ -229,9 +213,9 @@ const FALLBACK_PLANS = {
         name: "Lunch",
         time: "12:30 PM",
         foods: [
-          { name: "Grilled Chicken Breast", portion: "6 oz", calories: 270 },
-          { name: "Sweet Potato", portion: "1 medium", calories: 115 },
-          { name: "Broccoli", portion: "1 cup", calories: 55 },
+          { name: "Grilled Chicken Breast", portion: "6 oz", calories: 270, protein: 53, carbs: 0, fat: 6 },
+          { name: "Sweet Potato", portion: "1 medium", calories: 115, protein: 2, carbs: 26, fat: 0.1 },
+          { name: "Broccoli", portion: "1 cup", calories: 55, protein: 4, carbs: 11, fat: 0.6 },
         ],
         totalCalories: 440,
       },
@@ -239,9 +223,9 @@ const FALLBACK_PLANS = {
         name: "Pre-Workout",
         time: "3:30 PM",
         foods: [
-          { name: "Greek Yogurt", portion: "1 cup", calories: 150 },
-          { name: "Apple", portion: "1 medium", calories: 95 },
-          { name: "Almonds", portion: "1 oz", calories: 160 },
+          { name: "Greek Yogurt", portion: "1 cup", calories: 150, protein: 20, carbs: 8, fat: 5 },
+          { name: "Apple", portion: "1 medium", calories: 95, protein: 0.5, carbs: 25, fat: 0.3 },
+          { name: "Almonds", portion: "1 oz", calories: 160, protein: 6, carbs: 6, fat: 14 },
         ],
         totalCalories: 405,
       },
@@ -249,8 +233,8 @@ const FALLBACK_PLANS = {
         name: "Post-Workout",
         time: "5:30 PM",
         foods: [
-          { name: "Whey Protein", portion: "1 scoop", calories: 120 },
-          { name: "Dextrose", portion: "25g", calories: 100 },
+          { name: "Whey Protein", portion: "1 scoop", calories: 120, protein: 24, carbs: 3, fat: 1 },
+          { name: "Dextrose", portion: "25g", calories: 100, protein: 0, carbs: 25, fat: 0 },
         ],
         totalCalories: 220,
       },
@@ -258,9 +242,9 @@ const FALLBACK_PLANS = {
         name: "Dinner",
         time: "7:00 PM",
         foods: [
-          { name: "Lean Beef", portion: "5 oz", calories: 275 },
-          { name: "Brown Rice", portion: "1 cup", calories: 220 },
-          { name: "Mixed Vegetables", portion: "1 cup", calories: 80 },
+          { name: "Lean Beef", portion: "5 oz", calories: 275, protein: 35, carbs: 0, fat: 15 },
+          { name: "Brown Rice", portion: "1 cup", calories: 220, protein: 5, carbs: 45, fat: 2 },
+          { name: "Mixed Vegetables", portion: "1 cup", calories: 80, protein: 2, carbs: 15, fat: 1 },
         ],
         totalCalories: 575,
       },
@@ -268,8 +252,8 @@ const FALLBACK_PLANS = {
         name: "Before Bed",
         time: "9:30 PM",
         foods: [
-          { name: "Cottage Cheese", portion: "1 cup", calories: 180 },
-          { name: "Casein Protein", portion: "1 scoop", calories: 120 },
+          { name: "Cottage Cheese", portion: "1 cup", calories: 180, protein: 24, carbs: 6, fat: 5 },
+          { name: "Casein Protein", portion: "1 scoop", calories: 120, protein: 24, carbs: 3, fat: 1 },
         ],
         totalCalories: 300,
       },
@@ -284,19 +268,15 @@ const FALLBACK_PLANS = {
   },
   health: {
     dailyCalories: 2000,
-    macros: {
-      protein: 100,
-      carbs: 225,
-      fat: 67,
-    },
+    macros: { protein: 100, carbs: 225, fat: 67 },
     meals: [
       {
         name: "Breakfast",
         time: "7:30 AM",
         foods: [
-          { name: "Overnight Oats", portion: "1 cup", calories: 300 },
-          { name: "Mixed Berries", portion: "1/2 cup", calories: 40 },
-          { name: "Chia Seeds", portion: "1 tbsp", calories: 60 },
+          { name: "Overnight Oats", portion: "1 cup", calories: 300, protein: 10, carbs: 50, fat: 8 },
+          { name: "Mixed Berries", portion: "1/2 cup", calories: 40, protein: 0.5, carbs: 10, fat: 0.2 },
+          { name: "Chia Seeds", portion: "1 tbsp", calories: 60, protein: 3, carbs: 6, fat: 4 },
         ],
         totalCalories: 400,
       },
@@ -304,10 +284,10 @@ const FALLBACK_PLANS = {
         name: "Lunch",
         time: "12:30 PM",
         foods: [
-          { name: "Mediterranean Salad", portion: "2 cups", calories: 150 },
-          { name: "Grilled Chicken", portion: "4 oz", calories: 180 },
-          { name: "Olive Oil Dressing", portion: "1 tbsp", calories: 120 },
-          { name: "Whole Grain Bread", portion: "1 slice", calories: 80 },
+          { name: "Mediterranean Salad", portion: "2 cups", calories: 150, protein: 5, carbs: 15, fat: 8 },
+          { name: "Grilled Chicken", portion: "4 oz", calories: 180, protein: 35, carbs: 0, fat: 4 },
+          { name: "Olive Oil Dressing", portion: "1 tbsp", calories: 120, protein: 0, carbs: 0, fat: 14 },
+          { name: "Whole Grain Bread", portion: "1 slice", calories: 80, protein: 3, carbs: 15, fat: 1 },
         ],
         totalCalories: 530,
       },
@@ -315,8 +295,8 @@ const FALLBACK_PLANS = {
         name: "Snack",
         time: "3:30 PM",
         foods: [
-          { name: "Hummus", portion: "1/4 cup", calories: 100 },
-          { name: "Carrot Sticks", portion: "1 cup", calories: 50 },
+          { name: "Hummus", portion: "1/4 cup", calories: 100, protein: 2, carbs: 9, fat: 6 },
+          { name: "Carrot Sticks", portion: "1 cup", calories: 50, protein: 1, carbs: 12, fat: 0.2 },
         ],
         totalCalories: 150,
       },
@@ -324,9 +304,9 @@ const FALLBACK_PLANS = {
         name: "Dinner",
         time: "6:30 PM",
         foods: [
-          { name: "Baked Salmon", portion: "4 oz", calories: 200 },
-          { name: "Quinoa", portion: "1/2 cup", calories: 110 },
-          { name: "Roasted Vegetables", portion: "1.5 cups", calories: 120 },
+          { name: "Baked Salmon", portion: "4 oz", calories: 200, protein: 22, carbs: 0, fat: 13 },
+          { name: "Quinoa", portion: "1/2 cup", calories: 110, protein: 4, carbs: 20, fat: 2 },
+          { name: "Roasted Vegetables", portion: "1.5 cups", calories: 120, protein: 3, carbs: 20, fat: 2 },
         ],
         totalCalories: 430,
       },
@@ -334,8 +314,8 @@ const FALLBACK_PLANS = {
         name: "Evening Snack",
         time: "8:30 PM",
         foods: [
-          { name: "Greek Yogurt", portion: "3/4 cup", calories: 100 },
-          { name: "Walnuts", portion: "1/4 cup", calories: 160 },
+          { name: "Greek Yogurt", portion: "3/4 cup", calories: 100, protein: 15, carbs: 6, fat: 3 },
+          { name: "Walnuts", portion: "1/4 cup", calories: 160, protein: 4, carbs: 4, fat: 15 },
         ],
         totalCalories: 260,
       },
@@ -348,80 +328,84 @@ const FALLBACK_PLANS = {
       "Limit added sugars, sodium, and highly processed foods",
     ],
   },
-}
+};
 
 interface UserData {
-  age: string
-  gender: string
-  height: string
-  weight: string
-  activityLevel: string
-  goal: string
-  dietaryRestrictions: string[]
-  allergies: string
-  preferences: string
-  mealPreference: string
+  age: string;
+  gender: string;
+  height: string;
+  weight: string;
+  activityLevel: string;
+  goal: string;
+  dietaryRestrictions: string[];
+  allergies: string;
+  preferences: string;
+  mealPreference: string;
+  medicalConditions: string;
 }
 
 interface Food {
-  name: string
-  portion: string
-  calories: number
+  name: string;
+  portion: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
 }
 
 interface Meal {
-  name: string
-  time: string
-  foods: Food[]
-  totalCalories: number
+  name: string;
+  time: string;
+  foods: Food[];
+  totalCalories: number;
 }
 
 export interface NutritionPlan {
-  id: string
-  dailyCalories: number
+  id: string;
+  dailyCalories: number;
   macros: {
-    protein: number
-    carbs: number
-    fat: number
-  }
-  meals: Meal[]
-  recommendations: string[]
+    protein: number;
+    carbs: number;
+    fat: number;
+  };
+  meals: Meal[];
+  recommendations: string[];
 }
 
 export async function generateNutritionPlan(userData: UserData): Promise<NutritionPlan> {
   try {
-    // First try to use AI to generate a plan
-    const aiPlan = await tryGenerateWithAI(userData)
+    const aiPlan = await tryGenerateWithAI(userData);
     if (aiPlan) {
-      return aiPlan
+      return aiPlan;
     }
-
-    // If AI generation fails, use fallback plan
-    return getFallbackPlan(userData)
+    return getFallbackPlan(userData);
   } catch (error) {
-    console.error("Error in generateNutritionPlan:", error)
-
-    // Always return a valid plan even if there's an error
-    return getFallbackPlan(userData)
+    console.error("Error in generateNutritionPlan:", error);
+    return getFallbackPlan(userData);
   }
 }
 
 async function tryGenerateWithAI(userData: UserData): Promise<NutritionPlan | null> {
   try {
-    // Import dynamically to prevent issues if the AI SDK is not available
-    const { generateText } = await import("ai")
-    const { openai } = await import("@ai-sdk/openai")
-
-    // Check if we have an API key (this would be set in a real environment)
-    // For demo purposes, we'll simulate not having one to use the fallback
-    const hasApiKey = false // In production, check process.env.OPENAI_API_KEY
-
-    if (!hasApiKey) {
-      console.log("No OpenAI API key available, using fallback plan")
-      return null
+    // Check if AI SDK is available (optional, for environments without AI)
+    let generateText, openai;
+    try {
+      const aiModule = await import("ai");
+      const openaiModule = await import("@ai-sdk/openai");
+      generateText = aiModule.generateText;
+      openai = openaiModule.openai;
+    } catch (error) {
+      console.error("AI SDK not available:", error);
+      return null;
     }
 
-    // Create a prompt for the AI model
+    // Check for API key (replace with actual check in production)
+    const hasApiKey = false; // process.env.OPENAI_API_KEY in production
+    if (!hasApiKey) {
+      console.log("No OpenAI API key available, using fallback plan");
+      return null;
+    }
+
     const prompt = `
       Generate a personalized nutrition plan based on the following information:
       
@@ -435,30 +419,34 @@ async function tryGenerateWithAI(userData: UserData): Promise<NutritionPlan | nu
       Allergies: ${userData.allergies}
       Food Preferences: ${userData.preferences}
       Preferred Meals Per Day: ${userData.mealPreference}
+      Medical Conditions: ${userData.medicalConditions}
       
-      Please provide a detailed nutrition plan with:
+      Provide a detailed nutrition plan with:
       1. Daily calorie target
-      2. Macronutrient breakdown (protein, carbs, fat)
-      3. ${userData.mealPreference} meal suggestions with food items, portions, and calories
-      4. General nutrition recommendations
+      2. Macronutrient breakdown (protein, carbs, fat in grams)
+      3. ${userData.mealPreference} meal suggestions with food items, portions, calories, and macronutrients (protein, carbs, fat in grams)
+      4. General nutrition recommendations tailored to the user's goal and medical conditions
       
-      Format the response as a JSON object with the following structure:
+      Format the response as a JSON object:
       {
         "dailyCalories": number,
         "macros": {
-          "protein": number (grams),
-          "carbs": number (grams),
-          "fat": number (grams)
+          "protein": number,
+          "carbs": number,
+          "fat": number
         },
         "meals": [
           {
-            "name": string (e.g., "Breakfast"),
-            "time": string (e.g., "8:00 AM"),
+            "name": string,
+            "time": string,
             "foods": [
               {
                 "name": string,
                 "portion": string,
-                "calories": number
+                "calories": number,
+                "protein": number,
+                "carbs": number,
+                "fat": number
               }
             ],
             "totalCalories": number
@@ -466,143 +454,153 @@ async function tryGenerateWithAI(userData: UserData): Promise<NutritionPlan | nu
         ],
         "recommendations": [string]
       }
-    `
+    `;
 
-    // Use the AI SDK to generate the nutrition plan
     const { text } = await generateText({
       model: openai("gpt-3.5-turbo"),
       prompt,
       system:
-        "You are a professional nutritionist with expertise in creating personalized meal plans. Generate detailed, realistic nutrition plans based on user data.",
-    })
+          "You are a professional nutritionist with expertise in creating personalized meal plans. Generate detailed, realistic nutrition plans based on user data, considering medical conditions.",
+    });
 
-    // Parse the response
-    const plan = JSON.parse(text) as NutritionPlan
-
-    // Add a unique ID to the plan
-    const planWithId = {
-      ...plan,
-      id: generateUniqueId(),
-    }
-
-    // Save the plan to local storage
-    saveNutritionPlan(planWithId)
-
-    return planWithId
+    const plan = JSON.parse(text) as NutritionPlan;
+    const planWithId = { ...plan, id: generateUniqueId() };
+    saveNutritionPlan(planWithId);
+    return planWithId;
   } catch (error) {
-    console.error("Error in AI generation:", error)
-    return null
+    console.error("Error in AI generation:", error);
+    return null;
   }
 }
 
 function getFallbackPlan(userData: UserData): NutritionPlan {
-  // Select the appropriate fallback plan based on the user's goal
-  const goalType = userData.goal as keyof typeof FALLBACK_PLANS
-  const basePlan = FALLBACK_PLANS[goalType] || FALLBACK_PLANS.maintain
+  const goalType = userData.goal as keyof typeof FALLBACK_PLANS;
+  const basePlan = FALLBACK_PLANS[goalType] || FALLBACK_PLANS.maintain;
 
-  // Adjust the number of meals based on user preference
-  const mealCount = Number.parseInt(userData.mealPreference) || 3
-  let adjustedMeals = [...basePlan.meals]
+  const mealCount = parseInt(userData.mealPreference) || 3;
+  let adjustedMeals = [...basePlan.meals];
 
-  // If user wants fewer meals than in the fallback plan, remove some
   if (mealCount < adjustedMeals.length) {
-    adjustedMeals = adjustedMeals.slice(0, mealCount)
-  }
-  // If user wants more meals, add snacks
-  else if (mealCount > adjustedMeals.length) {
+    adjustedMeals = adjustedMeals.slice(0, mealCount);
+  } else if (mealCount > adjustedMeals.length) {
     const snacks = [
       {
         name: "Additional Snack",
         time: "11:00 AM",
-        foods: [{ name: "Protein Bar", portion: "1 bar", calories: 200 }],
+        foods: [{ name: "Protein Bar", portion: "1 bar", calories: 200, protein: 20, carbs: 15, fat: 7 }],
         totalCalories: 200,
       },
       {
         name: "Additional Snack",
         time: "3:00 PM",
-        foods: [{ name: "Mixed Nuts", portion: "1 oz", calories: 170 }],
+        foods: [{ name: "Mixed Nuts", portion: "1 oz", calories: 170, protein: 5, carbs: 6, fat: 15 }],
         totalCalories: 170,
       },
       {
         name: "Additional Snack",
         time: "9:00 PM",
-        foods: [{ name: "Casein Protein", portion: "1 scoop", calories: 120 }],
+        foods: [{ name: "Casein Protein", portion: "1 scoop", calories: 120, protein: 24, carbs: 3, fat: 1 }],
         totalCalories: 120,
       },
-    ]
+    ];
 
     for (let i = adjustedMeals.length; i < mealCount && i - adjustedMeals.length < snacks.length; i++) {
-      adjustedMeals.push(snacks[i - adjustedMeals.length])
+      adjustedMeals.push(snacks[i - adjustedMeals.length]);
     }
   }
 
-  // Create the final plan
+  const recommendations = [...basePlan.recommendations];
+  if (userData.medicalConditions) {
+    recommendations.push("Consult a healthcare professional to tailor this plan to your medical conditions.");
+  }
+
   const plan: NutritionPlan = {
     id: generateUniqueId(),
     dailyCalories: basePlan.dailyCalories,
     macros: basePlan.macros,
     meals: adjustedMeals,
-    recommendations: basePlan.recommendations,
-  }
+    recommendations,
+  };
 
-  // Save the plan to local storage
-  saveNutritionPlan(plan)
-
-  return plan
+  saveNutritionPlan(plan);
+  return plan;
 }
 
-// Helper function to generate a unique ID
 function generateUniqueId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).substring(2)
+  return Date.now().toString(36) + Math.random().toString(36).substring(2);
 }
 
-// Helper function to save the nutrition plan to local storage
 function saveNutritionPlan(plan: NutritionPlan): void {
   if (typeof window !== "undefined") {
     try {
-      // Get existing plans or initialize empty array
-      const existingPlansJson = localStorage.getItem("nutritionPlans")
-      const existingPlans = existingPlansJson ? JSON.parse(existingPlansJson) : []
-
-      // Add new plan
-      existingPlans.push(plan)
-
-      // Save back to local storage
-      localStorage.setItem("nutritionPlans", JSON.stringify(existingPlans))
-
-      // Set current plan
-      localStorage.setItem("currentPlan", JSON.stringify(plan))
+      const existingPlansJson = localStorage.getItem("nutritionPlans");
+      const existingPlans = existingPlansJson ? JSON.parse(existingPlansJson) : [];
+      existingPlans.push(plan);
+      localStorage.setItem("nutritionPlans", JSON.stringify(existingPlans));
+      localStorage.setItem("currentPlan", JSON.stringify(plan));
     } catch (error) {
-      console.error("Error saving to localStorage:", error)
-      // Continue execution even if localStorage fails
+      console.error("Error saving to localStorage:", error);
     }
   }
 }
 
-// Function to get the current nutrition plan
 export function getCurrentNutritionPlan(): NutritionPlan | null {
   if (typeof window !== "undefined") {
     try {
-      const planJson = localStorage.getItem("currentPlan")
-      return planJson ? JSON.parse(planJson) : null
+      const planJson = localStorage.getItem("currentPlan");
+      if (!planJson) return null;
+
+      // Parse and add default macronutrients if missing (for backward compatibility)
+      const plan = JSON.parse(planJson) as NutritionPlan;
+      const normalizedPlan: NutritionPlan = {
+        ...plan,
+        meals: plan.meals.map((meal) => ({
+          ...meal,
+          foods: meal.foods.map((food) => ({
+            name: food.name,
+            portion: food.portion,
+            calories: food.calories,
+            protein: food.protein ?? 0, // Default to 0 if missing
+            carbs: food.carbs ?? 0,
+            fat: food.fat ?? 0,
+          })),
+        })),
+      };
+      return normalizedPlan;
     } catch (error) {
-      console.error("Error reading from localStorage:", error)
-      return null
+      console.error("Error reading from localStorage:", error);
+      return null;
     }
   }
-  return null
+  return null;
 }
 
-// Function to get all nutrition plans
 export function getAllNutritionPlans(): NutritionPlan[] {
   if (typeof window !== "undefined") {
     try {
-      const plansJson = localStorage.getItem("nutritionPlans")
-      return plansJson ? JSON.parse(plansJson) : []
+      const plansJson = localStorage.getItem("nutritionPlans");
+      if (!plansJson) return [];
+
+      // Normalize plans for backward compatibility
+      const plans = JSON.parse(plansJson) as NutritionPlan[];
+      return plans.map((plan) => ({
+        ...plan,
+        meals: plan.meals.map((meal) => ({
+          ...meal,
+          foods: meal.foods.map((food) => ({
+            name: food.name,
+            portion: food.portion,
+            calories: food.calories,
+            protein: food.protein ?? 0,
+            carbs: food.carbs ?? 0,
+            fat: food.fat ?? 0,
+          })),
+        })),
+      }));
     } catch (error) {
-      console.error("Error reading from localStorage:", error)
-      return []
+      console.error("Error reading from localStorage:", error);
+      return [];
     }
   }
-  return []
+  return [];
 }

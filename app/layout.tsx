@@ -7,7 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "NutriAI - Personalized Nutrition Plans",
+  title: "FitFork - Personalized Nutrition Plans",
   description: "AI-powered nutrition planning tailored to your needs",
     generator: 'v0.dev'
 }

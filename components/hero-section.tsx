@@ -29,7 +29,7 @@ export function HeroSection() {
             <div className="relative w-full max-w-[500px] aspect-square">
               <img
                 src="/placeholder.svg?height=500&width=500"
-                alt="NutriAI Dashboard Preview"
+                alt="FitFork Dashboard Preview"
                 className="rounded-lg shadow-xl"
                 width={500}
                 height={500}
